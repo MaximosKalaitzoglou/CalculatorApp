@@ -60,25 +60,30 @@ export class CalculatorService {
   }
 
   backspace(state: string) {
-    console.log('Entered state: ' + this.state);
+    console.log('Entered state: ' + state);
 
     if (state === 'digit') {
       this.display = this.display.slice(0, -1);
-      if (this.display.length < 1) {
-        this.display = '0';
-      }
     } else if (state === 'operator') {
-      this.display = this.display.slice(0, -3);
+      this.display = this.display.slice(0, -1);
     } else if (state === 'function') {
       const tokens = this.display.split(' ');
-
+      console.log(tokens);
       let size = tokens[tokens.length - 1].length + 1;
       this.display = this.display.slice(0, -size);
     } else if (state === 'parenthesis-open' || state === 'parenthesis-close') {
       this.display = this.display.slice(0, -3);
     }
 
-    const tokens = this.display.split(' ');
+    if (this.display.length < 1) {
+      this.display = '0';
+    }
+
+    let tokens = this.display.split(' ');
+    if (tokens[tokens.length - 1] === '') {
+      tokens = tokens.slice(0, -1);
+      this.display = this.display.slice(0, -1);
+    }
     console.log(tokens);
     this.determineStates(tokens[tokens.length - 1]);
     console.log('Exit state: ' + this.state);
@@ -106,6 +111,7 @@ export class CalculatorService {
         this.functionState(value);
         break;
       case 'CE':
+        this.backspace(prevState);
         break;
       case 'C':
         this.display = '0';
