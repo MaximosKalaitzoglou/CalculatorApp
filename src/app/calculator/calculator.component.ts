@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CalculatorService } from './calculator.service';
+import { CalculatorButtonList } from './calculator-button-list';
 
 @Component({
   selector: 'app-calculator',
@@ -8,7 +9,7 @@ import { CalculatorService } from './calculator.service';
 })
 export class CalculatorComponent implements OnInit {
   value: string = '';
-
+  buttonList: string[][] = new CalculatorButtonList().getButtons();
   constructor(private calcServ: CalculatorService) {}
 
   ngOnInit(): void {

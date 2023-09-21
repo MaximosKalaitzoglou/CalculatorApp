@@ -2,6 +2,7 @@
   type="button"
   class="btn btn-outline-primary keys-lg"
   (click)="onHandleButtonClick()"
+  [disabled]="value === 'TBD'"
 >
-  {{ value }}
+  {{ value }} <sup *ngIf="value === 'x'">2</sup>
 </button>
