@@ -18,8 +18,12 @@ export class CalculatorService {
   parenthesis: number = 0;
   state: string = '';
   result: number = 0;
+  error: { invalid: boolean; message: string } = {
+    invalid: false,
+    message: '',
+  };
 
-  displayWasUpdated = new EventEmitter<void>();
+  displayWasUpdated = new EventEmitter<{ invalid: boolean; message: string }>();
 
   getDisplay() {
     return this.display.slice();
@@ -89,8 +93,13 @@ export class CalculatorService {
     console.log('Exit state: ' + this.state);
   }
 
+  calculateOutput() {
+
+  }
+
   updateDisplay(value: string) {
     console.log(value);
+    this.error.invalid = false;
     const prevState = this.state;
     this.determineStates(value);
 
@@ -118,8 +127,10 @@ export class CalculatorService {
         break;
       case 'equals':
         if (this.parenthesis > 0) {
-          alert('Parenthesis is not closed!!');
+          this.error.invalid = true;
+          this.error.message = 'Parenthesis not closed!';
         } else {
+          this.calculateOutput();
         }
         break;
       case 'parenthesis-open':
@@ -136,7 +147,9 @@ export class CalculatorService {
         break;
       case 'special':
         if (prevState === 'parenthesis-open') {
-          console.log('Action not allowed!');
+          this.error.invalid = true;
+          this.error.message = 'Cannot cast ' + value + ' on (';
+
           this.state = prevState;
           break;
         }
@@ -144,7 +157,7 @@ export class CalculatorService {
         break;
     }
 
-    this.displayWasUpdated.emit();
+    this.displayWasUpdated.emit(this.error);
   }
 
   digitState(value: string) {
@@ -193,4 +206,5 @@ export class CalculatorService {
 
     this.display += ' ' + value + ' ';
   }
+
 }

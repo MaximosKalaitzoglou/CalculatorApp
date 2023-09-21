@@ -3,6 +3,7 @@
   class="btn btn-outline-primary keys-lg"
   (click)="onHandleButtonClick()"
   [disabled]="value === 'TBD'"
+  [style.color]="checkIfSpecial(value) && value !== 'TBD' ? '#6A5ACD' : 'white'"
 >
   {{ value }} <sup *ngIf="value === 'x'">2</sup>
 </button>

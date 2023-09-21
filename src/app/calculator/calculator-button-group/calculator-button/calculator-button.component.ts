@@ -8,11 +8,20 @@ import { CalculatorService } from '../../calculator.service';
 })
 export class CalculatorButtonComponent {
   @Input() value: string = '';
-
+  isSpecial: boolean = false;
   constructor(private calcService: CalculatorService) {}
 
   onHandleButtonClick() {
     console.log(this.value);
     this.calcService.updateDisplay(this.value);
+  }
+
+  checkIfSpecial(value: string) {
+
+    if (isNaN(parseFloat(value))) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

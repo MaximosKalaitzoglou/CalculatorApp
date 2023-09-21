@@ -9,13 +9,21 @@ import { CalculatorButtonList } from './calculator-button-list';
 })
 export class CalculatorComponent implements OnInit {
   value: string = '';
+  error: { invalid: boolean; message: string } = {
+    invalid: false,
+    message: '',
+  };
+
   buttonList: string[][] = new CalculatorButtonList().getButtons();
   constructor(private calcServ: CalculatorService) {}
 
   ngOnInit(): void {
     this.value = this.calcServ.getDisplay();
-    this.calcServ.displayWasUpdated.subscribe(() => {
-      this.value = this.calcServ.getDisplay();
-    });
+    this.calcServ.displayWasUpdated.subscribe(
+      (error: { invalid: boolean; message: string }) => {
+        this.value = this.calcServ.getDisplay();
+        this.error = error;
+      }
+    );
   }
 }
