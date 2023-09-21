@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CalculatorService } from '../../calculator.service';
+import { CalculatorDisplayService } from '../../calculatorDisplay.service';
 
 @Component({
   selector: 'app-calculator-button',
@@ -9,15 +9,14 @@ import { CalculatorService } from '../../calculator.service';
 export class CalculatorButtonComponent {
   @Input() value: string = '';
   isSpecial: boolean = false;
-  constructor(private calcService: CalculatorService) {}
+  constructor(private calcDispService: CalculatorDisplayService) {}
 
   onHandleButtonClick() {
     console.log(this.value);
-    this.calcService.updateDisplay(this.value);
+    this.calcDispService.updateDisplay(this.value);
   }
 
   checkIfSpecial(value: string) {
-
     if (isNaN(parseFloat(value))) {
       return true;
     } else {

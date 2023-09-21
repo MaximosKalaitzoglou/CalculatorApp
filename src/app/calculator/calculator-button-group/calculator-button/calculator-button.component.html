@@ -3,7 +3,8 @@
   class="btn btn-outline-primary keys-lg"
   (click)="onHandleButtonClick()"
   [disabled]="value === 'TBD'"
-  [style.color]="checkIfSpecial(value) && value !== 'TBD' ? '#6A5ACD' : 'white'"
+  [style]="checkIfSpecial(value) && value !== 'TBD' ? 'color: #6A5ACD; font-size: 1.6rem' : 'color: white'"
+  [ngClass]="checkIfSpecial(value) && value !== 'TBD' ? 'operator' : ''"
 >
   {{ value }} <sup *ngIf="value === 'x'">2</sup>
 </button>

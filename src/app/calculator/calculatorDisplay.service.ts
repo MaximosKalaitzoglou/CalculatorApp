@@ -1,9 +1,9 @@
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
+import { AnalyzeTokenService } from './analyze-token.service';
+import { CalculateOutputService } from './calculate-output.service';
 
-const operators = ['+', '-', '×', '÷'];
-const functions = ['Log', 'ln', 'sin', 'cos', 'tan', '√'];
-const specials = ['%', '!'];
-export class CalculatorService {
+@Injectable()
+export class CalculatorDisplayService {
   /* display is updated by user input and returned to update the
   current display
 
@@ -12,11 +12,10 @@ export class CalculatorService {
   state is used to know the current input state
 
   result is the output of the calculator when the "=" sign is pressed
-
   */
   display: string = '0';
   parenthesis: number = 0;
-  state: string = '';
+  state: string = 'digit';
   result: number = 0;
   error: { invalid: boolean; message: string } = {
     invalid: false,
@@ -25,24 +24,17 @@ export class CalculatorService {
 
   displayWasUpdated = new EventEmitter<{ invalid: boolean; message: string }>();
 
+  constructor(
+    private analyzer: AnalyzeTokenService,
+    private calculate: CalculateOutputService
+  ) {}
+
   getDisplay() {
     return this.display.slice();
   }
 
-  isOperator(token: string): boolean {
-    return operators.includes(token);
-  }
-
-  isFunction(token: string): boolean {
-    return functions.includes(token);
-  }
-
-  isSpecial(token: string): boolean {
-    return specials.includes(token);
-  }
-
   determineStates(value: string) {
-    if (this.isOperator(value)) {
+    if (this.analyzer.isOperator(value)) {
       this.state = 'operator';
     } else if (value === '=') {
       this.state = 'equals';
@@ -50,14 +42,16 @@ export class CalculatorService {
       this.state = 'C';
     } else if (value === 'CE') {
       this.state = 'CE';
-    } else if (this.isFunction(value)) {
+    } else if (this.analyzer.isFunction(value)) {
       this.state = 'function';
     } else if (value === '(') {
       this.state = 'parenthesis-open';
     } else if (value === ')') {
       this.state = 'parenthesis-close';
-    } else if (this.isSpecial(value)) {
+    } else if (this.analyzer.isSpecial(value)) {
       this.state = 'special';
+    } else if (this.analyzer.isConstant(value)) {
+      this.state = 'constant';
     } else {
       this.state = 'digit';
     }
@@ -94,11 +88,11 @@ export class CalculatorService {
   }
 
   calculateOutput() {
-
+    this.display = this.calculate.calculate(this.display);
   }
 
   updateDisplay(value: string) {
-    console.log(value);
+    // console.log(value);
     this.error.invalid = false;
     const prevState = this.state;
     this.determineStates(value);
@@ -131,9 +125,14 @@ export class CalculatorService {
           this.error.message = 'Parenthesis not closed!';
         } else {
           this.calculateOutput();
+          this.state = 'digit';
         }
+
         break;
       case 'parenthesis-open':
+        if (prevState === 'digit') {
+          this.operatorState('×');
+        }
         this.setParenthesis(value);
         this.parenthesis++;
         console.log(this.parenthesis);
@@ -155,6 +154,12 @@ export class CalculatorService {
         }
         this.specialState(value);
         break;
+      case 'constant':
+        if (prevState === 'digit' || prevState === 'constant') {
+          this.operatorState('×');
+        }
+        this.digitState(value);
+        break;
     }
 
     this.displayWasUpdated.emit(this.error);
@@ -169,7 +174,7 @@ export class CalculatorService {
   }
 
   operatorState(value: string) {
-    if (this.isOperator(this.display[this.display.length - 2])) {
+    if (this.analyzer.isOperator(this.display[this.display.length - 2])) {
       this.display = this.display.slice(0, -3);
     }
     this.display += ' ' + value + ' ';
@@ -179,7 +184,7 @@ export class CalculatorService {
   functionState(value: string) {
     const tokens = this.display.split(' ');
     // console.log(tokens);
-    if (this.isFunction(tokens[tokens.length - 2])) {
+    if (this.analyzer.isFunction(tokens[tokens.length - 2])) {
       this.display = this.display.slice(
         0,
         -tokens[tokens.length - 2].length - 2
@@ -206,5 +211,4 @@ export class CalculatorService {
 
     this.display += ' ' + value + ' ';
   }
-
 }

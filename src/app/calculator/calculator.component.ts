@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CalculatorService } from './calculator.service';
+import { CalculatorDisplayService } from './calculatorDisplay.service';
 import { CalculatorButtonList } from './calculator-button-list';
 
 @Component({
@@ -15,13 +15,13 @@ export class CalculatorComponent implements OnInit {
   };
 
   buttonList: string[][] = new CalculatorButtonList().getButtons();
-  constructor(private calcServ: CalculatorService) {}
+  constructor(private calcDispServ: CalculatorDisplayService) {}
 
   ngOnInit(): void {
-    this.value = this.calcServ.getDisplay();
-    this.calcServ.displayWasUpdated.subscribe(
+    this.value = this.calcDispServ.getDisplay();
+    this.calcDispServ.displayWasUpdated.subscribe(
       (error: { invalid: boolean; message: string }) => {
-        this.value = this.calcServ.getDisplay();
+        this.value = this.calcDispServ.getDisplay();
         this.error = error;
       }
     );

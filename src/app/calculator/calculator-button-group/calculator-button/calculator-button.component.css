@@ -12,7 +12,7 @@ button {
 
 /* Style the hover effect */
 button:hover {
-  color: #e05a87;
+  color: #e05a87 !important;
   transform: scale(1.5);
 }
 button.active.focus,
