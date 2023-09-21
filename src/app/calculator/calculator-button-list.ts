@@ -8,7 +8,7 @@ export class CalculatorButtonList {
   ];
 
   getButtons() {
-    console.log(this.calcButtons);
+    // console.log(this.calcButtons);
     return this.calcButtons;
   }
 }
