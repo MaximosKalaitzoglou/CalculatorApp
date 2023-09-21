@@ -4,7 +4,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ### Initialization
 
-Download and run npm install first.
+Download and run `npm install` first.
 
 ## Development server
 
