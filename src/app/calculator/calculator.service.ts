@@ -64,11 +64,21 @@ export class CalculatorService {
 
     switch (this.state) {
       case 'operator':
+        if (prevState === 'function') {
+          console.log('Not allowed action!');
+          this.state = 'function';
+          break;
+        }
+        this.operatorState(value);
         break;
       case 'digit':
         this.digitState(value);
         break;
       case 'function':
+        if(prevState === 'digit'){
+          this.operatorState('×');
+        }
+        this.functionState(value);
         break;
       case 'CE':
         break;
@@ -78,8 +88,10 @@ export class CalculatorService {
       case 'equals':
         break;
       case 'parenthesis-open':
+        this.parenthesis++;
         break;
       case 'parenthesis-close':
+        this.parenthesis--;
         break;
     }
 
@@ -92,5 +104,41 @@ export class CalculatorService {
     } else {
       this.display += value;
     }
+  }
+
+  operatorState(value: string) {
+    if (this.isOperator(this.display[this.display.length - 2])) {
+      this.display = this.display.slice(0, -3);
+    }
+    this.display += ' ' + value + ' ';
+    // console.log(this.display);
+  }
+
+  functionState(value: string) {
+    const tokens = this.display.split(' ');
+    // console.log(tokens);
+    if (this.isFunction(tokens[tokens.length - 2])) {
+      this.display = this.display.slice(
+        0,
+        -tokens[tokens.length - 2].length - 2
+      );
+
+      // this.backspace(this.state);
+    }
+    if (tokens.length < 2 && tokens[0] === '0') {
+      this.display = value + ' ';
+    } else {
+      this.display += ' ' + value + ' ';
+    }
+    this.setParenthesis('(');
+    this.parenthesis++;
+  }
+
+  setParenthesis(value: string) {
+    if (value === ')' && this.parenthesis < 1) {
+      return;
+    }
+
+    this.display += ' ' + value + ' ';
   }
 }
