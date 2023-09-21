@@ -1,8 +1,8 @@
 import { EventEmitter } from '@angular/core';
 
 const operators = ['+', '-', '×', '÷'];
-const functions = ['Log', 'ln', 'sin', 'cos', '!', 'tan', '√', '%'];
-
+const functions = ['Log', 'ln', 'sin', 'cos', 'tan', '√'];
+const specials = ['%', '!'];
 export class CalculatorService {
   /* display is updated by user input and returned to update the
   current display
@@ -16,7 +16,7 @@ export class CalculatorService {
   */
   display: string = '0';
   parenthesis: number = 0;
-  state: string = 'digit';
+  state: string = '';
   result: number = 0;
 
   displayWasUpdated = new EventEmitter<void>();
@@ -31,6 +31,10 @@ export class CalculatorService {
 
   isFunction(token: string): boolean {
     return functions.includes(token);
+  }
+
+  isSpecial(token: string): boolean {
+    return specials.includes(token);
   }
 
   determineStates(value: string) {
@@ -48,13 +52,36 @@ export class CalculatorService {
       this.state = 'parenthesis-open';
     } else if (value === ')') {
       this.state = 'parenthesis-close';
+    } else if (this.isSpecial(value)) {
+      this.state = 'special';
     } else {
-      // if (this.isFunction(value.slice(0, -2))) {
-      //   this.state = 'function';
-      //   return;
-      // }
       this.state = 'digit';
     }
+  }
+
+  backspace(state: string) {
+    console.log('Entered state: ' + this.state);
+
+    if (state === 'digit') {
+      this.display = this.display.slice(0, -1);
+      if (this.display.length < 1) {
+        this.display = '0';
+      }
+    } else if (state === 'operator') {
+      this.display = this.display.slice(0, -3);
+    } else if (state === 'function') {
+      const tokens = this.display.split(' ');
+
+      let size = tokens[tokens.length - 1].length + 1;
+      this.display = this.display.slice(0, -size);
+    } else if (state === 'parenthesis-open' || state === 'parenthesis-close') {
+      this.display = this.display.slice(0, -3);
+    }
+
+    const tokens = this.display.split(' ');
+    console.log(tokens);
+    this.determineStates(tokens[tokens.length - 1]);
+    console.log('Exit state: ' + this.state);
   }
 
   updateDisplay(value: string) {
@@ -64,18 +91,16 @@ export class CalculatorService {
 
     switch (this.state) {
       case 'operator':
-        if (prevState === 'function') {
-          console.log('Not allowed action!');
-          this.state = 'function';
-          break;
-        }
         this.operatorState(value);
         break;
       case 'digit':
+        if (prevState === 'special') {
+          this.operatorState('×');
+        }
         this.digitState(value);
         break;
       case 'function':
-        if(prevState === 'digit'){
+        if (prevState === 'digit') {
           this.operatorState('×');
         }
         this.functionState(value);
@@ -86,12 +111,30 @@ export class CalculatorService {
         this.display = '0';
         break;
       case 'equals':
+        if (this.parenthesis > 0) {
+          alert('Parenthesis is not closed!!');
+        } else {
+        }
         break;
       case 'parenthesis-open':
+        this.setParenthesis(value);
         this.parenthesis++;
+        console.log(this.parenthesis);
+
         break;
       case 'parenthesis-close':
-        this.parenthesis--;
+        this.setParenthesis(value);
+        this.parenthesis = this.parenthesis > 0 ? --this.parenthesis : 0;
+        console.log(this.parenthesis);
+
+        break;
+      case 'special':
+        if (prevState === 'parenthesis-open') {
+          console.log('Action not allowed!');
+          this.state = prevState;
+          break;
+        }
+        this.specialState(value);
         break;
     }
 
@@ -123,15 +166,18 @@ export class CalculatorService {
         -tokens[tokens.length - 2].length - 2
       );
 
-      // this.backspace(this.state);
+      this.backspace(this.state);
     }
     if (tokens.length < 2 && tokens[0] === '0') {
       this.display = value + ' ';
     } else {
       this.display += ' ' + value + ' ';
     }
-    this.setParenthesis('(');
-    this.parenthesis++;
+    this.updateDisplay('(');
+  }
+
+  specialState(value: string) {
+    this.display += ' ' + value;
   }
 
   setParenthesis(value: string) {
