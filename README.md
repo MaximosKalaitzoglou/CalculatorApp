@@ -1,6 +1,9 @@
 # CalculatorProject
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.2.
+[Screencast from 22-09-2023 04:12:35 ΜΜ.webm](https://github.com/MaximosKalaitzoglou/CalculatorApp/assets/76825759/0403a2e2-639c-4367-827a-facb11bf7cab)
+
+
 
 ### Initialization
 
