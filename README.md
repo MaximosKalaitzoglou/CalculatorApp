@@ -2,6 +2,17 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.2.
 
+## Sort Preview
+
+https://github.com/MaximosKalaitzoglou/CalculatorApp/assets/76825759/c1999e0c-cb9b-441a-877d-203ec2692846
+
+
+
+
+### Initialization
+
+Download and run `npm install` first.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
