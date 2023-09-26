@@ -4,9 +4,8 @@
     <div
       class="input-group mb-3"
       [className]="error.invalid ? 'error' : 'output'"
-      [innerHTML]="formatExpression(value.slice())"
     >
-      <!-- {{ value }} <sup *ngIf="exponentPower !== ''">{{ exponentPower }}</sup> -->
+      {{ value }}
     </div>
     <p class="error-message" *ngIf="error.invalid">{{ error.message }}</p>
     <br />

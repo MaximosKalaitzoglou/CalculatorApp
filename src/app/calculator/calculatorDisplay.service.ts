@@ -59,6 +59,8 @@ export class CalculatorDisplayService {
     }
   }
 
+  //TODO: Bug fixes for backspace not working correctly if overused
+  // main problem the spaces between operators,digits, function
   backspace(state: string) {
     console.log('Entered state: ' + state);
 
@@ -71,7 +73,11 @@ export class CalculatorDisplayService {
       console.log(tokens);
       let size = tokens[tokens.length - 1].length + 1;
       this.display = this.display.slice(0, -size);
-    } else if (state === 'parenthesis-open' || state === 'parenthesis-close') {
+    } else if (state === 'parenthesis-open') {
+      this.parenthesis--;
+      this.display = this.display.slice(0, -3);
+    } else if (state === 'parenthesis-close') {
+      this.parenthesis++;
       this.display = this.display.slice(0, -3);
     }
 

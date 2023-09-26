@@ -11,7 +11,10 @@ import { CustomError } from '../custom-error.model';
 export class CalculatorComponent implements OnInit {
   value: string = '';
   error: CustomError = new CustomError();
-  exponentPower: string = '';
+  exponent = {
+    status: false,
+    value: '2',
+  };
 
   buttonList: string[][] = new CalculatorButtonList().getButtons();
   constructor(private calcDispServ: CalculatorDisplayService) {}
@@ -25,8 +28,9 @@ export class CalculatorComponent implements OnInit {
   }
 
   formatExpression(expression: string): string {
+    // Use a regular expression to match and replace the exponent parts
     const formattedExpression = expression.replace(
-      /(\d+|e|π) \^ (\d+)/g,
+      /(\d+|e|π) \^ (\d+|e|π|)/g,
       (match, base, exponent) => {
         return `${base}<sup>${exponent}</sup>`;
       }
