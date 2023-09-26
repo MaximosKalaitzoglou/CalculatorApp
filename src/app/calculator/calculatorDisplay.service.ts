@@ -1,6 +1,8 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AnalyzeTokenService } from './analyze-token.service';
 import { CalculateOutputService } from './calculate-output.service';
+import { CustomError } from '../custom-error.model';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class CalculatorDisplayService {
@@ -16,13 +18,11 @@ export class CalculatorDisplayService {
   display: string = '0';
   parenthesis: number = 0;
   state: string = 'digit';
+  isDecimal: boolean = false;
   result: number = 0;
-  error: { invalid: boolean; message: string } = {
-    invalid: false,
-    message: '',
-  };
+  error: CustomError = new CustomError();
 
-  displayWasUpdated = new EventEmitter<{ invalid: boolean; message: string }>();
+  displayWasUpdated = new Subject<CustomError>();
 
   constructor(
     private analyzer: AnalyzeTokenService,
@@ -52,6 +52,8 @@ export class CalculatorDisplayService {
       this.state = 'special';
     } else if (this.analyzer.isConstant(value)) {
       this.state = 'constant';
+    } else if (value === '.') {
+      this.state = 'decimal';
     } else {
       this.state = 'digit';
     }
@@ -91,18 +93,35 @@ export class CalculatorDisplayService {
     this.display = this.calculate.calculate(this.display);
   }
 
+  //TODO: minus sign state since numbers can be -6 , -8
+  // fractional sign . needs it's own state
+
   updateDisplay(value: string) {
     // console.log(value);
     this.error.invalid = false;
     const prevState = this.state;
     this.determineStates(value);
+    if (this.analyzer.isNotADigit(value)) this.isDecimal = false;
 
     switch (this.state) {
       case 'operator':
-        this.operatorState(value);
+        if (prevState === 'parenthesis-open') {
+          if (value !== '-') {
+            this.error.invalid = true;
+            this.error.message =
+              'Cannot cast operator after ( \n Only "-" sign allowed!';
+          } else {
+            this.digitState('0');
+            this.operatorState(value);
+          }
+        } else {
+          this.operatorState(value);
+        }
         break;
       case 'digit':
         if (prevState === 'special') {
+          this.operatorState('×');
+        } else if (prevState === 'parenthesis-close') {
           this.operatorState('×');
         }
         this.digitState(value);
@@ -139,6 +158,13 @@ export class CalculatorDisplayService {
 
         break;
       case 'parenthesis-close':
+        if (prevState === 'operator') {
+          this.error.invalid = true;
+          this.error.message =
+            'Did you forget to add a number after operator ?';
+          this.state = prevState;
+          break;
+        }
         this.setParenthesis(value);
         this.parenthesis = this.parenthesis > 0 ? --this.parenthesis : 0;
         console.log(this.parenthesis);
@@ -160,9 +186,23 @@ export class CalculatorDisplayService {
         }
         this.digitState(value);
         break;
+      case 'decimal':
+        if (this.isDecimal) {
+          this.error.invalid = true;
+          this.error.message = 'Cannot cast "." to an already decimal number';
+          break;
+        }
+        if (prevState === 'special' || prevState === 'parenthesis-close') this.operatorState('×');
+        this.decimalState(value);
+        break;
     }
 
-    this.displayWasUpdated.emit(this.error);
+    this.displayWasUpdated.next(this.error);
+  }
+
+  decimalState(value: string) {
+    this.display += value;
+    this.isDecimal = true;
   }
 
   digitState(value: string) {
