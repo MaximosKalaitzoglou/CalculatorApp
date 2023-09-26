@@ -62,7 +62,7 @@ export class CalculatorDisplayService {
   backspace(state: string) {
     console.log('Entered state: ' + state);
 
-    if (state === 'digit') {
+    if (state === 'digit' || state === 'decimal' || state === 'constant') {
       this.display = this.display.slice(0, -1);
     } else if (state === 'operator') {
       this.display = this.display.slice(0, -1);
@@ -192,7 +192,12 @@ export class CalculatorDisplayService {
           this.error.message = 'Cannot cast "." to an already decimal number';
           break;
         }
-        if (prevState === 'special' || prevState === 'parenthesis-close') this.operatorState('×');
+        if (
+          prevState === 'special' ||
+          prevState === 'parenthesis-close' ||
+          prevState === 'constant'
+        )
+          this.operatorState('×');
         this.decimalState(value);
         break;
     }

@@ -13,7 +13,9 @@ export class CalculatorButtonComponent {
 
   onHandleButtonClick() {
     console.log(this.value);
-    this.calcDispService.updateDisplay(this.value);
+    let power = '^';
+    if (this.value === 'x') this.calcDispService.updateDisplay(power);
+    else this.calcDispService.updateDisplay(this.value);
   }
 
   checkIfSpecial(value: string) {

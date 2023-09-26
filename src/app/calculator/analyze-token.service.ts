@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-const operators = ['+', '-', '×', '÷'];
+const operators = ['+', '-', '×', '÷', '^'];
 const functions = ['Log', 'ln', 'sin', 'cos', 'tan', '√'];
 const specials = ['%', '!'];
 const parenthesis = ['(', ')'];

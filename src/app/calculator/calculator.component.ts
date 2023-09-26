@@ -11,6 +11,7 @@ import { CustomError } from '../custom-error.model';
 export class CalculatorComponent implements OnInit {
   value: string = '';
   error: CustomError = new CustomError();
+  exponentPower: string = '';
 
   buttonList: string[][] = new CalculatorButtonList().getButtons();
   constructor(private calcDispServ: CalculatorDisplayService) {}
@@ -21,5 +22,30 @@ export class CalculatorComponent implements OnInit {
       this.value = this.calcDispServ.getDisplay();
       this.error = error;
     });
+  }
+
+  formatExpression(expression: string): string {
+    const formattedExpression = expression.replace(
+      /(\d+|e|π) \^ (\d+)/g,
+      (match, base, exponent) => {
+        return `${base}<sup>${exponent}</sup>`;
+      }
+    );
+
+    const formattedSpecials = formattedExpression.replace(
+      /(\d+)\s*([!%])?\s*\^\s*(\d+)/g,
+      (match, base, special, exponent) => {
+        return `${base}${special}<sup>${exponent}</sup>`;
+      }
+    );
+
+    const formattedFunctions = formattedSpecials.replace(
+      /(\w+)\s*\((.*?)\)\s*\^\s*(\d+)/g,
+      (match, funcName, funcArgs, exponent) => {
+        return `${funcName}(${funcArgs})<sup>${exponent}</sup>`;
+      }
+    );
+
+    return formattedFunctions;
   }
 }

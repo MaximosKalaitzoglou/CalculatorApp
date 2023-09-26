@@ -6,10 +6,11 @@ export class CalculateOutputService {
   constructor(private analyzer: AnalyzeTokenService) {}
 
   getPriority(operator: string): number {
-    if (operator === '+' || operator === '-') return 2;
+    if (operator === '+' || operator === '-') return 3;
     if (this.analyzer.isFunction(operator)) return 0;
     if (this.analyzer.isSpecial(operator)) return 0;
-    if (operator === '×' || operator === '÷') return 1;
+    if (operator === '×' || operator === '÷') return 2;
+    if (operator === '^') return 0;
 
     return 0; // for other tokens like numbers
   }
@@ -95,6 +96,9 @@ export class CalculateOutputService {
             break;
           case '÷':
             stack.push(operand1 / operand2);
+            break;
+          case '^':
+            stack.push(Math.pow(operand1, operand2));
             break;
         }
         //functions basically work with 1 number so i only need to pop the number
