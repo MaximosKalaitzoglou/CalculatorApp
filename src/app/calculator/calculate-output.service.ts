@@ -12,7 +12,7 @@ export class CalculateOutputService {
     if (operator === '×' || operator === '÷') return 2;
     if (operator === '^') return 0;
 
-    return 0; // for other tokens like numbers
+    return 0;
   }
 
   getRandomNumber() {
@@ -24,7 +24,6 @@ export class CalculateOutputService {
   // so for ex. 9 x 3 + 2 -> [9,3,x,2,+] -> so the expression is then evaluated further
   // to 9 x 3 = [27,2,+] -> 27 + 2 = 29
 
-  // TODO: "Parenthesis priority doesn't work it needs to be implemented!!"
   tokenizeAndPrioritizeOperants(expression: string): (number | string)[] {
     const output: (number | string)[] = [];
     const operatorStack: string[] = [];
@@ -75,7 +74,6 @@ export class CalculateOutputService {
 
     return output;
   }
-  // TODO: factorial function needs to be implemented
   evaluateExpression(postExpression: (number | string)[]): number | string {
     const stack: number[] = [];
     for (const token of postExpression) {
@@ -158,7 +156,7 @@ export class CalculateOutputService {
     }
 
     // The final result will be the only value left on the stack
-    return isNaN(stack[0]) ? 'Error' : stack[0];
+    return isNaN(stack[0]) ? 'Error' : parseFloat(stack[0].toFixed(11));
   }
 
   factorial(num: number): number {

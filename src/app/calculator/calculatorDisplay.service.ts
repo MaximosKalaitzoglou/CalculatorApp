@@ -19,9 +19,7 @@ export class CalculatorDisplayService {
   parenthesis: number = 0;
   state: string = 'start';
   isDecimal: boolean = false;
-  result: number = 0;
   error: CustomError = new CustomError();
-  answerSnapshot: number = 0;
   displayWasUpdated = new Subject<CustomError>();
 
   constructor(
@@ -106,8 +104,13 @@ export class CalculatorDisplayService {
       : 0;
   }
 
+  resetCalculator() {
+    this.display = '0';
+    this.parenthesis = 0;
+    this.isDecimal = false;
+    this.state = 'start';
+  }
   //TODO: minus sign state since numbers can be -6 , -8
-  // fractional sign . needs it's own state
 
   updateDisplay(value: string) {
     // console.log(value);
@@ -151,8 +154,7 @@ export class CalculatorDisplayService {
         this.backspace(prevState);
         break;
       case 'C':
-        this.display = '0';
-        this.state = 'start';
+        this.resetCalculator();
         break;
       case 'equals':
         if (this.parenthesis > 0) {
@@ -178,6 +180,10 @@ export class CalculatorDisplayService {
           this.error.invalid = true;
           this.error.message =
             'Did you forget to add a number after operator ?';
+          this.state = prevState;
+          break;
+        }
+        if (value === ')' && this.parenthesis < 1) {
           this.state = prevState;
           break;
         }
@@ -267,10 +273,13 @@ export class CalculatorDisplayService {
   }
 
   setParenthesis(value: string) {
-    if (value === ')' && this.parenthesis < 1) {
-      return;
+    if (
+      this.display.length < 2 &&
+      this.display[this.display.length - 1] === '0'
+    ) {
+      this.display = ' ' + value + ' ';
+    } else {
+      this.display += ' ' + value + ' ';
     }
-
-    this.display += ' ' + value + ' ';
   }
 }
