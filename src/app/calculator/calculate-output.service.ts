@@ -15,6 +15,10 @@ export class CalculateOutputService {
     return 0; // for other tokens like numbers
   }
 
+  getRandomNumber() {
+    return Math.random().toFixed(4).toString();
+  }
+
   // Tokenizes the input string
   // then based on the priority of the operand it sorts the tokens (x, /, +, -) after the number pairs
   // so for ex. 9 x 3 + 2 -> [9,3,x,2,+] -> so the expression is then evaluated further

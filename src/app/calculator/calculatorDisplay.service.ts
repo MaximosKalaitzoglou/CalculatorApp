@@ -17,11 +17,11 @@ export class CalculatorDisplayService {
   */
   display: string = '0';
   parenthesis: number = 0;
-  state: string = 'digit';
+  state: string = 'start';
   isDecimal: boolean = false;
   result: number = 0;
   error: CustomError = new CustomError();
-
+  answerSnapshot: number = 0;
   displayWasUpdated = new Subject<CustomError>();
 
   constructor(
@@ -95,8 +95,15 @@ export class CalculatorDisplayService {
     console.log('Exit state: ' + this.state);
   }
 
+  getPrevAns() {
+    return this.analyzer.constants['Ans'];
+  }
+
   calculateOutput() {
     this.display = this.calculate.calculate(this.display);
+    this.analyzer.constants['Ans'] = !isNaN(parseFloat(this.display))
+      ? parseFloat(this.display)
+      : 0;
   }
 
   //TODO: minus sign state since numbers can be -6 , -8
@@ -125,9 +132,11 @@ export class CalculatorDisplayService {
         }
         break;
       case 'digit':
-        if (prevState === 'special') {
-          this.operatorState('×');
-        } else if (prevState === 'parenthesis-close') {
+        if (
+          prevState === 'special' ||
+          prevState === 'constant' ||
+          prevState === 'parenthesis-close'
+        ) {
           this.operatorState('×');
         }
         this.digitState(value);
@@ -143,6 +152,7 @@ export class CalculatorDisplayService {
         break;
       case 'C':
         this.display = '0';
+        this.state = 'start';
         break;
       case 'equals':
         if (this.parenthesis > 0) {
@@ -190,7 +200,8 @@ export class CalculatorDisplayService {
         if (prevState === 'digit' || prevState === 'constant') {
           this.operatorState('×');
         }
-        this.digitState(value);
+        if (value === 'Rng') this.digitState(this.calculate.getRandomNumber());
+        else this.digitState(value);
         break;
       case 'decimal':
         if (this.isDecimal) {

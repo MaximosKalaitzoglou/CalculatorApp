@@ -1,14 +1,19 @@
 <!-- <span ><img class="gif" src="../../assets/angry-cat.gif" height="60px" width="100px" /></span> -->
 <div class="background">
   <div class="d-flex align-items-center flex-column display">
+    <div class="ans">
+      <p class="h4">
+        Ans = <span class="ans-update">{{ prevAnswer }}</span>
+      </p>
+    </div>
     <div
       class="input-group mb-3"
       [className]="error.invalid ? 'error' : 'output'"
     >
-      {{ value }}
+      <span>{{ value }} </span>
     </div>
     <p class="error-message" *ngIf="error.invalid">{{ error.message }}</p>
-    <br />
+    <hr class="screen-end" />
 
     <app-calculator-button-group
       *ngFor="let item of buttonList"

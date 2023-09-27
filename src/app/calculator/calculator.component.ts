@@ -15,6 +15,7 @@ export class CalculatorComponent implements OnInit {
     status: false,
     value: '2',
   };
+  prevAnswer = 0;
 
   buttonList: string[][] = new CalculatorButtonList().getButtons();
   constructor(private calcDispServ: CalculatorDisplayService) {}
@@ -24,6 +25,7 @@ export class CalculatorComponent implements OnInit {
     this.calcDispServ.displayWasUpdated.subscribe((error: CustomError) => {
       this.value = this.calcDispServ.getDisplay();
       this.error = error;
+      this.prevAnswer = this.calcDispServ.getPrevAns();
     });
   }
 

@@ -9,7 +9,7 @@ const pi = 3.1415926535897932384626433;
 
 @Injectable()
 export class AnalyzeTokenService {
-  constants: { [id: string]: number } = { e: e, π: pi };
+  constants: { [id: string]: number } = { e: e, π: pi, Ans: 0, Rng: 0 };
   constructor() {}
 
   isOperator(token: string): boolean {
