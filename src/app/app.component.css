@@ -3,3 +3,36 @@
   background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
   height: 100vh;
 }
+
+/* Style the footer */
+.footer {
+  text-align: center;
+  background-color: #343a40; /* Dark background color for the footer */
+  padding: 20px 0;
+  margin-top: 20px;
+  color: #fff; /* White text color for the footer */
+}
+
+/* Style the footer headings */
+.footer h5 {
+  color: #fff;
+}
+
+#myName {
+  color: rgb(0, 225, 255);
+  font-weight: bold; /* Make the link text bold to indicate interactivity */
+
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+#myName:hover {
+  transform: scale(1.2rem);
+  color: rgb(255, 0, 85);
+}
+
+#credits {
+  font-style: italic;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 600;
+}
